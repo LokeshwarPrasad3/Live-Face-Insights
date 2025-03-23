@@ -199,7 +199,7 @@ const FaceDetection = () => {
                 {/* Height of bar is based on confidence of that emotion */}
                 <div
                   style={{ height: `${100 * emotionValue}px` }}
-                  className={`status w-12 rounded-t ${gradientClass}`}
+                  className={`status w-12 rounded-t transition-all duration-200 ease-in ${gradientClass}`}
                 ></div>
               </div>
             );
