@@ -1,12 +1,23 @@
-# React + Vite
+# Face Expression Detector
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A real-time face analysis web app that detects faces through your webcam and provides instant predictions for emotion, age, and gender. Designed with a sleek, responsive interface, it offers a smooth and interactive experience across all devices.
 
-Currently, two official plugins are available:
+🔗 **Live Demo:** [Click here to try it out](https://your-live-link-here.com)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![face-api.js](https://img.shields.io/badge/face--api.js-FF6F61?style=for-the-badge&logo=javascript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ✨ Features
+
+- 🎥 **Live Face Detection** — Instantly detects faces from your device’s camera.
+- 😊 **Emotion Analysis** — Recognizes emotions like happy, sad, angry, surprised, and more.
+- 🎂 **Age Prediction** — Estimates the age of detected faces in real time.
+- 🚻 **Gender Classification** — Identifies gender as male or female.
+- 📱 **Responsive Layout** — Fully optimized for desktop and mobile screens.
+- 🧑‍💻 **Intuitive Interface** — Simple and user-friendly with live visual feedback.
+
