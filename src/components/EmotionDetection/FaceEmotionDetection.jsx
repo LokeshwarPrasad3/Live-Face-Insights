@@ -1,7 +1,8 @@
 // Import necessary React hooks and face-api.js library
 import React, { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
-import CameraErrorImage from "../assets/images/camera-error.png";
+import CameraDeniedError from './CameraDeniedError';
+import CrazyLoader from '../Loader/CrazyLoader';
 
 // Define background colors for each emotion bar
 const emotionGradients = {
@@ -14,41 +15,57 @@ const emotionGradients = {
   surprised: 'bg-gradient-to-br from-pink-400 to-purple-400',
 };
 
-const FaceDetection = () => {
+const FaceEmotionDetection = () => {
   // Refs for video and canvas elements
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
   // States for detected data
+  const [isCameraAccess, setIsCameraAccess] = useState(false);
   const [expressions, setExpressions] = useState({});
   const [age, setAge] = useState(null);
   const [gender, setGender] = useState(null);
   const [error, setError] = useState(null); // To handle camera or model errors
+  const [isModuleLoaded, setIsModuleLoaded] = useState(false);
 
   useEffect(() => {
     // Function to load face-api models
     const loadModels = async () => {
       try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector');
-        await faceapi.nets.faceLandmark68Net.loadFromUri('/models/face_landmark_68');
-        await faceapi.nets.faceExpressionNet.loadFromUri('/models/face_expression');
+        await faceapi.nets.tinyFaceDetector.loadFromUri(
+          '/models/tiny_face_detector'
+        );
+        await faceapi.nets.faceLandmark68Net.loadFromUri(
+          '/models/face_landmark_68'
+        );
+        await faceapi.nets.faceExpressionNet.loadFromUri(
+          '/models/face_expression'
+        );
         await faceapi.nets.ageGenderNet.loadFromUri('/models/age_gender_model');
+        setIsModuleLoaded(true);
       } catch (err) {
         console.error('Error loading models:', err);
         setError('Failed to load face detection models.');
+        setIsModuleLoaded(true);
       }
     };
 
     // Function to start the webcam stream
     const startVideo = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+        setIsCameraAccess(true);
       } catch (err) {
         console.error('Error accessing webcam:', err);
-        setError('Unable to access webcam. Please ensure your camera is connected and permissions are granted.');
+        setError(
+          'Unable to access webcam. Please ensure your camera is connected and permissions are granted.'
+        );
+        setIsCameraAccess(false); 
       }
     };
 
@@ -81,10 +98,15 @@ const FaceDetection = () => {
               .withFaceExpressions()
               .withAgeAndGender(); // Also get age and gender info
 
-            const resizedDetections = faceapi.resizeResults(detections, displaySize);
+            const resizedDetections = faceapi.resizeResults(
+              detections,
+              displaySize
+            );
 
             // Clear canvas for redrawing
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            canvas
+              .getContext('2d')
+              .clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw detection results on the canvas
             faceapi.draw.drawDetections(canvas, resizedDetections);
@@ -110,62 +132,41 @@ const FaceDetection = () => {
     });
   }, []);
 
-  // Retry camera access if permission was denied
-  const requestCameraAccess = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setError(null); // Clear error on success
-      }
-    } catch (err) {
-      console.error("Error accessing webcam:", err);
-      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-        setError("Please allow camera permissions in your browser settings and try again.");
-      } else {
-        setError("Unable to access webcam. Please ensure your camera is connected and try again.");
-      }
-    }
-  };
-
   return (
-    <div style={{ textAlign: 'center', position: 'relative' }}>
+    <div className="content_without_height text-center relative flex flex-col">
       {/* If there is a camera error, show this */}
-      {error ? (
-        <div className="error_container mb-3 px-2 flex flex-col gap-2 justify-center items-center">
-          <img src={CameraErrorImage} alt="Camera Error" />
-          <p className="text-red-500 font-semibold">{error}</p>
-          <button
-            onClick={requestCameraAccess}
-            className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-4 py-1.5 rounded-lg shadow-md hover:from-indigo-600 hover:to-purple-700 transition duration-300 mt-1"
-          >
-            Retry Camera Access
-          </button>
-        </div>
-      ) : (
+      {(error && !isCameraAccess) && (
+        <CameraDeniedError error={error} />
+      )}
+      {(!isModuleLoaded) && (
+        <CrazyLoader message={"Module is Loading..."} />
+      )}
+      {(!error && isCameraAccess && isModuleLoaded) && (
         <>
-          {/* Video feed from webcam */}
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            style={{ width: '640px', height: '480px', objectFit: 'cover' }}
-          />
+          <div className="flex-1 min-h-0">
+            {/* Video feed from webcam */}
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              className='"w-full h-full object-cover'
+            />
 
-          {/* Canvas overlays for face detection and expressions */}
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              height: '480px',
-            }}
-          />
+            {/* Canvas overlays for face detection and expressions */}
+            <canvas
+              ref={canvasRef}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                height: '480px',
+              }}
+            />
+          </div>
 
           {/* Display detected age and gender */}
-          <div>
+          <div className="h-[80px]">
             <p className="text-base font-bold text-center mt-1 bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
               Estimate Age: {age}
             </p>
@@ -176,38 +177,38 @@ const FaceDetection = () => {
               Emotion Status:
             </h2>
           </div>
+          {/* Emotion graph (vertical bars for each expression) */}
+          <div className="graph_container flex justify-center items-center w-full border-b border-blue-600 h-[115px]">
+            <div className="main_expression_vertical_container flex gap-1.5 justify-end items-end max-w-fit h-full">
+              {Object.entries(expressions).map(([emotion, emotionValue]) => {
+                const lowerEmotion = emotion.toLowerCase();
+                const gradientClass =
+                  emotionGradients[lowerEmotion] || 'bg-gray-300';
+
+                return (
+                  <div
+                    key={emotion}
+                    className="individual_status_container text-center flex flex-col items-center"
+                  >
+                    {/* Emotion label */}
+                    <span className="text-[10px] font-medium capitalize block mb-1">
+                      {emotion}
+                    </span>
+
+                    {/* Height of bar is based on confidence of that emotion */}
+                    <div
+                      style={{ height: `${100 * emotionValue}px` }}
+                      className={`status w-12 rounded-t transition-all duration-200 ease-in ${gradientClass}`}
+                    ></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </>
       )}
-
-      {/* Emotion graph (vertical bars for each expression) */}
-      <div className="graph_container flex justify-center items-center w-full border-b border-blue-600">
-        <div className="main_expression_vertical_container flex gap-1.5 justify-end items-end max-w-fit h-[115px]">
-          {Object.entries(expressions).map(([emotion, emotionValue]) => {
-            const lowerEmotion = emotion.toLowerCase();
-            const gradientClass = emotionGradients[lowerEmotion] || 'bg-gray-300';
-
-            return (
-              <div
-                key={emotion}
-                className="individual_status_container text-center flex flex-col items-center"
-              >
-                {/* Emotion label */}
-                <span className="text-[10px] font-medium capitalize block mb-1">
-                  {emotion}
-                </span>
-
-                {/* Height of bar is based on confidence of that emotion */}
-                <div
-                  style={{ height: `${100 * emotionValue}px` }}
-                  className={`status w-12 rounded-t transition-all duration-200 ease-in ${gradientClass}`}
-                ></div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 };
 
-export default FaceDetection;
+export default FaceEmotionDetection;

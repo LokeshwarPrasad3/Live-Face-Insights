@@ -20,4 +20,3 @@ A real-time face analysis web app that detects faces through your webcam and pro
 - 🚻 **Gender Classification** — Identifies gender as male or female.
 - 📱 **Responsive Layout** — Fully optimized for desktop and mobile screens.
 - 🧑‍💻 **Intuitive Interface** — Simple and user-friendly with live visual feedback.
-
