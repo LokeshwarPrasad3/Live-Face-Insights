@@ -149,7 +149,7 @@ const FaceEmotionDetection = () => {
               ref={videoRef}
               autoPlay
               muted
-              className='"w-full h-full object-cover'
+              className="w-full h-full object-cover"
             />
 
             {/* Canvas overlays for face detection and expressions */}

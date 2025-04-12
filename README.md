@@ -2,7 +2,7 @@
 
 A real-time face analysis web app that detects faces through your webcam and provides instant predictions for emotion, age, and gender. Designed with a sleek, responsive interface, it offers a smooth and interactive experience across all devices.
 
-🔗 **Live Demo:** [Click here to try it out](https://your-live-link-here.com)
+🔗 **Live Demo:** [Click here to try it out](https://livefacedetect.netlify.app)
 
 ## 🛠️ Tech Stack
 

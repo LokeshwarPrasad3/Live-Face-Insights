@@ -2,5 +2,5 @@ body {
   font-family: 'Karla';
 }
 .content_without_height {
-  height: calc(100vh - 120px);
+  height: calc(100vh - 184px);
 }
